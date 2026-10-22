@@ -54,6 +54,9 @@ module cdeps_datm_comp
   use datm_datamode_cplhist_mod , only : datm_datamode_cplhist_advertise
   use datm_datamode_cplhist_mod , only : datm_datamode_cplhist_init_pointers
   use datm_datamode_cplhist_mod , only : datm_datamode_cplhist_advance
+  use datm_datamode_mesaclip_mod, only : datm_datamode_mesaclip_advertise
+  use datm_datamode_mesaclip_mod, only : datm_datamode_mesaclip_init_pointers
+  use datm_datamode_mesaclip_mod, only : datm_datamode_mesaclip_advance
 
   use datm_datamode_era5_mod    , only : datm_datamode_era5_advertise
   use datm_datamode_era5_mod    , only : datm_datamode_era5_init_pointers
@@ -366,7 +369,7 @@ contains
     select case (trim(datamode))
        case ('CORE2_NYF','CORE2_IAF','CORE_IAF_JRA', 'JRA55do', &
              'CORE_RYF6162_JRA','CORE_RYF8485_JRA','CORE_RYF9091_JRA','CORE_RYF0304_JRA', &
-             'CLMNCEP','CPLHIST','GEFS','ERA5','SIMPLE')
+             'CLMNCEP','CPLHIST','GEFS','ERA5','SIMPLE','MESACLIP')
        if (mainproc) write(logunit,'(3a)') subname,'datm datamode = ',trim(datamode)
     case default
        call shr_log_error(' ERROR illegal datm datamode = '//trim(datamode), rc=rc)
@@ -400,6 +403,9 @@ contains
        if (ChkErr(rc,__LINE__,u_FILE_u)) return
     case ('CPLHIST')
        call datm_datamode_cplhist_advertise(exportState, fldsExport, flds_scalar_name, rc)
+       if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    case ('MESACLIP')
+       call datm_datamode_mesaclip_advertise(exportState, fldsExport, flds_scalar_name, rc)
        if (ChkErr(rc,__LINE__,u_FILE_u)) return
     case ('ERA5')
        call datm_datamode_era5_advertise(exportState, fldsExport, flds_scalar_name, rc)
@@ -668,6 +674,9 @@ contains
        case('CPLHIST')
           call datm_datamode_cplhist_init_pointers(importState, exportState, sdat, rc)
           if (ChkErr(rc,__LINE__,u_FILE_u)) return
+       case('MESACLIP')
+          call datm_datamode_mesaclip_init_pointers(importState, exportState, sdat, rc)
+          if (ChkErr(rc,__LINE__,u_FILE_u)) return
        case('ERA5')
           call datm_datamode_era5_init_pointers(exportState, sdat, rc)
           if (ChkErr(rc,__LINE__,u_FILE_u)) return
@@ -687,7 +696,7 @@ contains
           case('CORE2_NYF','CORE2_IAF','CORE_IAF_JRA',&
                'CORE_RYF6162_JRA','CORE_RYF8485_JRA' ,&
                'CORE_RYF9091_JRA','CORE_RYF0304_JRA' , 'JRA55do', &
-               'CLMNCEP','CPLHIST','ERA5','GEFS','SIMPLE')
+               'CLMNCEP','CPLHIST','ERA5','GEFS','SIMPLE','MESACLIP')
              call dshr_restart_read(restfilm, rpfile, logunit, my_task, mpicom, sdat, rc)
              if (ChkErr(rc,__LINE__,u_FILE_u)) return
           case default
@@ -746,6 +755,9 @@ contains
     case('CPLHIST')
        call datm_datamode_cplhist_advance(rc)
        if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    case('MESACLIP')
+       call datm_datamode_mesaclip_advance(rc)
+       if (ChkErr(rc,__LINE__,u_FILE_u)) return
     case('ERA5')
        call datm_datamode_era5_advance(exportstate, mainproc, logunit, rc)
        if (ChkErr(rc,__LINE__,u_FILE_u)) return
@@ -765,7 +777,7 @@ contains
        case('CORE2_NYF','CORE2_IAF','CORE_IAF_JRA',&
             'CORE_RYF6162_JRA','CORE_RYF8485_JRA' ,&
             'CORE_RYF9091_JRA','CORE_RYF0304_JRA','JRA55do' ,&
-            'CLMNCEP','CPLHIST','ERA5','GEFS','SIMPLE')
+            'CLMNCEP','CPLHIST','ERA5','GEFS','SIMPLE','MESACLIP')
           call dshr_restart_write(rpfile, case_name, 'datm', inst_suffix, &
                target_ymd, target_tod, logunit, my_task, sdat, rc)
           if (ChkErr(rc,__LINE__,u_FILE_u)) return
