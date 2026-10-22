@@ -11,7 +11,6 @@ module datm_datamode_mesaclip_mod
   use shr_const_mod    , only : shr_const_rhofw, shr_const_rdair, shr_const_zvir ! MESACLIP
   use dshr_methods_mod , only : dshr_state_getfldptr, chkerr
   use dshr_strdata_mod , only : shr_strdata_type, shr_strdata_get_stream_pointer
-  use dshr_strdata_mod , only : shr_strdata_type
   use dshr_fldlist_mod , only : fldlist_type, dshr_fldlist_add
 
   implicit none
@@ -245,9 +244,6 @@ contains
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
     call shr_strdata_get_stream_pointer(sdat, 'Faxa_swvdf', strm_Faxa_swvdf, requirePointer=.true., &
          errmsg=subname//'ERROR: strm_Faxa_swvdf must be associated for mesaclip datamode', rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call shr_strdata_get_stream_pointer(sdat, 'Faxa_lwdn', strm_Faxa_lwdn, requirePointer=.true., &
-         errmsg=subname//'ERROR: strm_Faxa_lwdn must be associated for clmncep datamode', rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
  end subroutine datm_datamode_mesaclip_init_pointers

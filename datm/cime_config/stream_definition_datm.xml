@@ -5501,7 +5501,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5531,7 +5531,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5561,7 +5561,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5591,7 +5591,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5621,7 +5621,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5651,7 +5651,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5681,7 +5681,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5706,12 +5706,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5741,7 +5741,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5766,12 +5766,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5796,12 +5796,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5831,7 +5831,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5861,7 +5861,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5891,7 +5891,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5921,7 +5921,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5951,7 +5951,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -5981,7 +5981,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6011,7 +6011,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6041,7 +6041,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6071,7 +6071,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6101,7 +6101,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6131,7 +6131,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6156,12 +6156,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6191,7 +6191,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6216,12 +6216,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6246,12 +6246,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6281,7 +6281,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6311,7 +6311,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6341,7 +6341,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6371,7 +6371,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6401,7 +6401,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6431,7 +6431,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6461,7 +6461,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6491,7 +6491,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6521,7 +6521,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6551,7 +6551,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6581,7 +6581,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6606,12 +6606,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6641,7 +6641,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6666,12 +6666,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6696,12 +6696,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6731,7 +6731,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6761,7 +6761,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6791,7 +6791,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6821,7 +6821,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6851,7 +6851,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6881,7 +6881,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6911,7 +6911,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6941,7 +6941,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -6971,7 +6971,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7001,7 +7001,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7031,7 +7031,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7056,12 +7056,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7091,7 +7091,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7116,12 +7116,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7146,12 +7146,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7181,7 +7181,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7211,7 +7211,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7241,7 +7241,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7271,7 +7271,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7301,7 +7301,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7331,7 +7331,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7361,7 +7361,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7391,7 +7391,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7421,7 +7421,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7451,7 +7451,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7481,7 +7481,7 @@
       <tintalgo>linear</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7506,12 +7506,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7541,7 +7541,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7566,12 +7566,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7596,12 +7596,12 @@
     <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
     <stream_year_first>$DATM_YR_START</stream_year_first>
     <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>-10800</stream_offset>
+    <stream_offset>-21600</stream_offset>
     <stream_tintalgo>
-      <tintalgo>nearest</tintalgo>
+      <tintalgo>coszen</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7631,7 +7631,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7661,7 +7661,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7691,7 +7691,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
@@ -7721,7 +7721,7 @@
       <tintalgo>nearest</tintalgo>
     </stream_tintalgo>
     <stream_taxmode>
-      <taxmode>limit</taxmode>
+      <taxmode>extend</taxmode>
     </stream_taxmode>
     <stream_dtlimit>
       <dtlimit>1.e30</dtlimit>
