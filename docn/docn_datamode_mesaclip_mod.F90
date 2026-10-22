@@ -278,15 +278,19 @@ contains
 
     ! read ANGLE on the stream mesh's decomposition
     rcode = pio_openfile(sdat%pio_subsystem, pioid, sdat%io_type, trim(filename), pio_nowrite)
-    rcode = pio_inq_varid(pioid, 'ANGLE', varid)
     if (rcode /= pio_noerr) then
-       call shr_log_error(subname//'ERROR: no ANGLE in '//trim(filename), rc=rc)
+       call shr_log_error(subname//'ERROR: cannot open '//trim(filename), rc=rc)
        return
     end if
-    rcode = pio_inq_dimid(pioid, 'nlon', dimid)
-    rcode = pio_inq_dimlen(pioid, dimid, nlon)
-    rcode = pio_inq_dimid(pioid, 'nlat', dimid)
-    rcode = pio_inq_dimlen(pioid, dimid, nlat)
+    rcode = pio_inq_varid(pioid, 'ANGLE', varid)
+    if (rcode == pio_noerr) rcode = pio_inq_dimid(pioid, 'nlon', dimid)
+    if (rcode == pio_noerr) rcode = pio_inq_dimlen(pioid, dimid, nlon)
+    if (rcode == pio_noerr) rcode = pio_inq_dimid(pioid, 'nlat', dimid)
+    if (rcode == pio_noerr) rcode = pio_inq_dimlen(pioid, dimid, nlat)
+    if (rcode /= pio_noerr) then
+       call shr_log_error(subname//'ERROR: no ANGLE(nlat,nlon) in '//trim(filename), rc=rc)
+       return
+    end if
     call ESMF_MeshGet(sdat%pstrm(nsu)%stream_mesh, elementdistGrid=distgrid, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
     call ESMF_DistGridGet(distgrid, localDe=0, elementCount=lsize, rc=rc)
@@ -323,12 +327,17 @@ contains
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
     sinang(:) = dst(:)
 
-    ! interpolating cos and sin shortens the vector where ANGLE varies; renormalize
-    ! (points with no ocean source stay 0, which zeroes the current there)
+    ! interpolating cos and sin shortens the vector where ANGLE varies; renormalize.
+    ! Below half length the stencil straddles POP's grid fold, where ANGLE jumps by
+    ! pi and the regridded grid-relative currents are themselves unreliable, or has
+    ! no ocean source: set cos and sin to 0 there, which sends zero current.
     norm(:) = sqrt(cosang(:)**2 + sinang(:)**2)
-    where (norm(:) > 0.0_r8)
+    where (norm(:) >= 0.5_r8)
        cosang(:) = cosang(:) / norm(:)
        sinang(:) = sinang(:) / norm(:)
+    elsewhere
+       cosang(:) = 0.0_r8
+       sinang(:) = 0.0_r8
     end where
 
     call ESMF_FieldDestroy(field_src, rc=rc)
