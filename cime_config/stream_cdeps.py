@@ -18,6 +18,9 @@ _var_ref_re = re.compile(r"\$(\{)?(?P<name>\w+)(?(1)\})")
 
 _ymd_re = re.compile(r"%(?P<digits>[1-9][0-9]*)?y(?P<month>m(?P<day>d)?)?")
 
+# The <start>-<end> part of a CESM time-series file name, e.g. 2000010100-2001010100
+_daterange_re = re.compile(r"(?P<start>[0-9]{4,})-(?P<end>[0-9]{4,})")
+
 _stream_file_template = """
   <stream_info name="{streamname}">
    <taxmode>{stream_taxmode}</taxmode>
@@ -297,6 +300,14 @@ class StreamCDEPS(GenericXML):
                                 filename_advance_days,
                             )
                             stream_datafiles = stream_datafiles.strip()
+                        # endif
+                        if "%daterange" in stream_datafiles:
+                            stream_datafiles = self._sub_daterange(
+                                stream_name,
+                                stream_datafiles.strip(),
+                                data_year_first,
+                                data_year_last,
+                            )
                         # endif
                         if stream_vars[node_name]:
                             stream_vars[
@@ -732,6 +743,62 @@ class StreamCDEPS(GenericXML):
                     new_line = line.replace(match.group(0), date_string)
                     new_lines.append(new_line)
         return "\n".join(new_lines)
+
+    @staticmethod
+    def _sub_daterange(stream_name, filename, year_first, year_last):
+        """Expand %daterange in a file name to the existing files of a CESM
+        time-series set that cover year_first to year_last.
+
+        Time-series files hold one variable each, named by the dates they span,
+        e.g. VAR.2000010100-2001010100.nc or VAR.20860102-20960101.nc, so their
+        names can't be built from the year alone. %daterange stands for the
+        <start>-<end> part: the directory is listed, the files matching the rest
+        of the name are sorted by start date, and those overlapping the years are
+        kept. A file ending on Jan 1 stops at the start of that year. Stops with
+        an error if two kept files overlap or a year has no file.
+
+        Returns a string (filenames separated by newlines).
+        """
+        directory, name = os.path.split(filename)
+        expect(
+            name.count("%daterange") == 1 and "%daterange" not in directory,
+            "%daterange must appear once, in the file name, for {}".format(stream_name),
+        )
+        prefix, suffix = name.split("%daterange")
+        expect(
+            os.path.isdir(directory),
+            "No directory {} for stream {}".format(directory, stream_name),
+        )
+        files = []
+        for entry in os.listdir(directory):
+            if not (entry.startswith(prefix) and entry.endswith(suffix)):
+                continue
+            match = _daterange_re.fullmatch(entry[len(prefix) : len(entry) - len(suffix)])
+            if match is None:
+                continue
+            start, end = match.group("start"), match.group("end")
+            last = int(end[:4]) - (1 if end[4:8] == "0101" and not end[8:].strip("0") else 0)
+            if int(start[:4]) <= year_last and last >= year_first:
+                files.append((start, end, int(start[:4]), last, entry))
+        files.sort()
+        for previous, current in zip(files, files[1:]):
+            expect(
+                current[0] >= previous[1],
+                "Overlapping files for stream {}: {} and {}".format(
+                    stream_name, previous[4], current[4]
+                ),
+            )
+        covered = set()
+        for _, _, first, last, _ in files:
+            covered.update(range(first, last + 1))
+        missing = [year for year in range(year_first, year_last + 1) if year not in covered]
+        expect(
+            not missing,
+            "No file in {} for stream {} covers years {}".format(
+                os.path.join(directory, name), stream_name, missing
+            ),
+        )
+        return "\n".join(os.path.join(directory, entry) for *_, entry in files)
 
     @staticmethod
     def _add_xml_delimiter(list_to_deliminate, delimiter):
