@@ -3,13 +3,23 @@
 module docn_datamode_mesaclip_mod
 
   use ESMF             , only : ESMF_State, ESMF_LOGMSG_INFO, ESMF_LogWrite, ESMF_SUCCESS
+  use ESMF             , only : ESMF_Field, ESMF_FieldCreate, ESMF_FieldDestroy, ESMF_FieldRegrid
+  use ESMF             , only : ESMF_DistGrid, ESMF_MeshGet, ESMF_DistGridGet, ESMF_VM
+  use ESMF             , only : ESMF_VMGetCurrent, ESMF_VMBroadCast, ESMF_TYPEKIND_R8
+  use ESMF             , only : ESMF_MESHLOC_ELEMENT, ESMF_TERMORDER_SRCSEQ, ESMF_REGION_TOTAL
+  use ESMF             , only : ESMF_RouteHandle
   use NUOPC            , only : NUOPC_Advertise
-  use shr_kind_mod     , only : r8=>shr_kind_r8
+  use pio              , only : file_desc_t, io_desc_t, var_desc_t, pio_openfile, pio_closefile, pio_nowrite
+  use pio              , only : pio_inq_varid, pio_inq_dimid, pio_inq_dimlen, pio_initdecomp
+  use pio              , only : pio_freedecomp, pio_read_darray, pio_double, pio_noerr
+  use shr_kind_mod     , only : r8=>shr_kind_r8, cl=>shr_kind_cl
   use shr_log_mod      , only : shr_log_error
   use shr_const_mod    , only : shr_const_TkFrz, shr_const_pi, shr_const_ocn_ref_sal, shr_const_spval
-  use dshr_methods_mod , only : dshr_state_getfldptr, chkerr
+  use dshr_methods_mod , only : dshr_state_getfldptr, dshr_field_getfldptr, chkerr
   use dshr_fldlist_mod , only : fldlist_type, dshr_fldlist_add
   use dshr_strdata_mod , only : shr_strdata_type, shr_strdata_get_stream_pointer
+  use dshr_strdata_mod , only : shr_strdata_get_stream_count
+  use dshr_stream_mod  , only : shr_stream_getData
 
   implicit none
   private
@@ -32,6 +42,9 @@ module docn_datamode_mesaclip_mod
   real(r8), pointer :: strm_So_t(:)       => null()
   real(r8), pointer :: strm_So_u(:)       => null()
   real(r8), pointer :: strm_So_v(:)       => null()
+
+  ! MESACLIP: cos and sin of POP's U-grid ANGLE on the model mesh, to rotate currents
+  real(r8), allocatable :: cosang(:), sinang(:)
 
   real(r8) , parameter :: tkfrz   = shr_const_tkfrz       ! freezing point, fresh water (kelvin)
   real(r8) , parameter :: ocnsalt = shr_const_ocn_ref_sal ! ocean reference salinity
@@ -123,6 +136,12 @@ contains
     call shr_strdata_get_stream_pointer( sdat, 'So_s', strm_So_s, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
+    ! MESACLIP: angles to rotate POP's grid-relative currents to east/north
+    if (associated(strm_So_u) .and. associated(strm_So_v)) then
+       call docn_datamode_mesaclip_set_angle(sdat, rc)
+       if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    end if
+
     ! Allocation depends on exchanged fields, so check before filling arrays with values here
     So_t(:) = TkFrz
     if (associated(So_u)) So_u(:) = 0.0_r8
@@ -144,13 +163,15 @@ contains
 
     ! local variables
     logical                     :: units_CToK = .true. ! true => convert SST in C to K
+    integer                     :: n
+    real(r8)                    :: u, v
     character(len=*), parameter :: subname='(docn_datamode_mesaclip_advance): '
     !-------------------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
 
-    ! MESACLIP: POP currents are in cm/s; convert to m/s. They are still relative to
-    ! POP's grid axes (not rotated to east/north) and sit on U points.
+    ! MESACLIP: POP currents are in cm/s along POP's grid axes; convert to m/s, then
+    ! rotate to east/north below. They still sit on U points.
     if (associated(So_u)) then
        if (associated(strm_So_u)) then
           So_u(:) = strm_So_u(:) * 0.01_r8
@@ -164,6 +185,15 @@ contains
        else
           So_v(:) = shr_const_spval
        end if
+    end if
+    ! MESACLIP: rotate to east/north as POP's coupler does (u cos - v sin, u sin + v cos)
+    if (allocated(cosang) .and. associated(So_u) .and. associated(So_v)) then
+       do n = 1, size(So_u)
+          u = So_u(n)
+          v = So_v(n)
+          So_u(n) = u*cosang(n) - v*sinang(n)
+          So_v(n) = u*sinang(n) + v*cosang(n)
+       end do
     end if
     ! MESACLIP: MESACLIP has no daily boundary-layer depth (only the daily maximum,
     ! XBLT), so without a stream send 0, not spval. WW3 floors it at 5 m.
@@ -201,5 +231,112 @@ contains
     endif
 
   end subroutine docn_datamode_mesaclip_advance
+
+  !===============================================================================
+  subroutine docn_datamode_mesaclip_set_angle(sdat, rc)
+
+    ! MESACLIP: read POP's U-grid ANGLE (radians, angle of the grid's x axis from
+    ! east) from the first file of the So_u stream, on that stream's mesh, and
+    ! regrid its cosine and sine to the model mesh with the stream's own route
+    ! handle, so they match how the currents themselves are regridded.
+
+    ! input/output variables
+    type(shr_strdata_type) , intent(in)  :: sdat
+    integer                , intent(out) :: rc
+
+    ! local variables
+    type(ESMF_VM)         :: vm
+    type(ESMF_DistGrid)   :: distgrid
+    type(ESMF_Field)      :: field_src, field_dst
+    type(file_desc_t)     :: pioid
+    type(io_desc_t)       :: iodesc
+    type(var_desc_t)      :: varid
+    type(ESMF_RouteHandle):: routehandle
+    integer               :: ns, nsu, lsize, rcode, dimid, nlon, nlat
+    integer , allocatable :: compdof(:)
+    real(r8), allocatable :: angle(:), norm(:)
+    real(r8), pointer     :: src(:), dst(:)
+    character(len=cl)     :: filename
+    character(len=*), parameter :: subname='(docn_datamode_mesaclip_set_angle): '
+    !-------------------------------------------------------------------------------
+
+    rc = ESMF_SUCCESS
+
+    ! stream holding So_u
+    nsu = 0
+    do ns = 1, shr_strdata_get_stream_count(sdat)
+       if (any(sdat%pstrm(ns)%fldlist_model == 'So_u')) nsu = ns
+    end do
+    if (nsu == 0) return
+
+    ! its first file name, from the main task
+    call ESMF_VMGetCurrent(vm, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    if (sdat%mainproc) call shr_stream_getData(sdat%stream(nsu), 1, filename)
+    call ESMF_VMBroadCast(vm, filename, cl, 0, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+
+    ! read ANGLE on the stream mesh's decomposition
+    rcode = pio_openfile(sdat%pio_subsystem, pioid, sdat%io_type, trim(filename), pio_nowrite)
+    rcode = pio_inq_varid(pioid, 'ANGLE', varid)
+    if (rcode /= pio_noerr) then
+       call shr_log_error(subname//'ERROR: no ANGLE in '//trim(filename), rc=rc)
+       return
+    end if
+    rcode = pio_inq_dimid(pioid, 'nlon', dimid)
+    rcode = pio_inq_dimlen(pioid, dimid, nlon)
+    rcode = pio_inq_dimid(pioid, 'nlat', dimid)
+    rcode = pio_inq_dimlen(pioid, dimid, nlat)
+    call ESMF_MeshGet(sdat%pstrm(nsu)%stream_mesh, elementdistGrid=distgrid, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    call ESMF_DistGridGet(distgrid, localDe=0, elementCount=lsize, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    allocate(compdof(lsize), angle(lsize))
+    call ESMF_DistGridGet(distgrid, localDe=0, seqIndexList=compdof, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    call pio_initdecomp(sdat%pio_subsystem, pio_double, (/nlon, nlat/), compdof, iodesc)
+    call pio_read_darray(pioid, varid, iodesc, angle, rcode)
+    call pio_freedecomp(pioid, iodesc)
+    call pio_closefile(pioid)
+
+    ! regrid cos and sin of ANGLE to the model mesh
+    field_src = ESMF_FieldCreate(sdat%pstrm(nsu)%stream_mesh, ESMF_TYPEKIND_R8, &
+         meshloc=ESMF_MESHLOC_ELEMENT, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    field_dst = ESMF_FieldCreate(sdat%model_mesh, ESMF_TYPEKIND_R8, meshloc=ESMF_MESHLOC_ELEMENT, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    call dshr_field_getfldptr(field_src, fldptr1=src, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    call dshr_field_getfldptr(field_dst, fldptr1=dst, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    allocate(cosang(size(dst)), sinang(size(dst)), norm(size(dst)))
+    routehandle = sdat%pstrm(nsu)%routehandle
+
+    src(:) = cos(angle(:))
+    call ESMF_FieldRegrid(field_src, field_dst, routehandle=routehandle, &
+         termorderflag=ESMF_TERMORDER_SRCSEQ, checkflag=.false., zeroregion=ESMF_REGION_TOTAL, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    cosang(:) = dst(:)
+    src(:) = sin(angle(:))
+    call ESMF_FieldRegrid(field_src, field_dst, routehandle=routehandle, &
+         termorderflag=ESMF_TERMORDER_SRCSEQ, checkflag=.false., zeroregion=ESMF_REGION_TOTAL, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    sinang(:) = dst(:)
+
+    ! interpolating cos and sin shortens the vector where ANGLE varies; renormalize
+    ! (points with no ocean source stay 0, which zeroes the current there)
+    norm(:) = sqrt(cosang(:)**2 + sinang(:)**2)
+    where (norm(:) > 0.0_r8)
+       cosang(:) = cosang(:) / norm(:)
+       sinang(:) = sinang(:) / norm(:)
+    end where
+
+    call ESMF_FieldDestroy(field_src, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    call ESMF_FieldDestroy(field_dst, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    deallocate(compdof, angle, norm)
+
+  end subroutine docn_datamode_mesaclip_set_angle
 
 end module docn_datamode_mesaclip_mod
