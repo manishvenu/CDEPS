@@ -13,9 +13,14 @@
        This file may have ice desc entries.
   -->
   <description modifier_mode='1'>
-    <desc ice="DICE[%SSMI][%IAF]">dice mode </desc>
+    <desc ice="DICE[%SSMI][%IAF][%MESACLIP-HIST][%MESACLIP-RCP26][%MESACLIP-RCP45][%MESACLIP-RCP60][%MESACLIP-RCP85]">dice mode </desc>
     <desc option="SSMI">is ssmi</desc>
     <desc option="IAF"> is siaf</desc>
+    <desc option="MESACLIP-HIST"> MESACLIP HIST from GDEX d651007 (mesaclip datamode)</desc>
+    <desc option="MESACLIP-RCP26"> MESACLIP RCP26 from GDEX d651043 (mesaclip datamode)</desc>
+    <desc option="MESACLIP-RCP45"> MESACLIP RCP45 from GDEX d651043 (mesaclip datamode)</desc>
+    <desc option="MESACLIP-RCP60"> MESACLIP RCP60 from GDEX d651008 (mesaclip datamode)</desc>
+    <desc option="MESACLIP-RCP85"> MESACLIP RCP85 from GDEX d651009 (mesaclip datamode)</desc>
   </description>
 
   <entry id="COMP_ICE">
@@ -29,11 +34,16 @@
 
   <entry id="DICE_MODE">
     <type>char</type>
-    <valid_values>ssmi,ssmi_iaf</valid_values>
+    <valid_values>ssmi,ssmi_iaf,mesaclip_hist,mesaclip_rcp26,mesaclip_rcp45,mesaclip_rcp60,mesaclip_rcp85</valid_values>
     <default_value>ssmi</default_value>
     <values match="last">
       <value compset="DICE%SSMI">ssmi</value>
       <value compset="DICE%IAF">ssmi_iaf</value>
+      <value compset="DICE%MESACLIP-HIST">mesaclip_hist</value>
+      <value compset="DICE%MESACLIP-RCP26">mesaclip_rcp26</value>
+      <value compset="DICE%MESACLIP-RCP45">mesaclip_rcp45</value>
+      <value compset="DICE%MESACLIP-RCP60">mesaclip_rcp60</value>
+      <value compset="DICE%MESACLIP-RCP85">mesaclip_rcp85</value>
     </values>
     <group>run_component_dice</group>
     <file>env_run.xml</file>
