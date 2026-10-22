@@ -4,6 +4,8 @@ set(SRCFILES ocn_comp_nuopc.F90
              docn_datamode_som_mod.F90
              docn_datamode_aquaplanet_mod.F90
              docn_datamode_cplhist_mod.F90
+             # MESACLIP: added by mesawave add_mesaclip_to_cesm.py
+             docn_datamode_mesaclip_mod.F90
              docn_datamode_multilev_mod.F90
              docn_datamode_multilev_sstdata_mod.F90
              docn_datamode_multilev_cplhist_mod.F90
