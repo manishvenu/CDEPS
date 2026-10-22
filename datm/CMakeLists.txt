@@ -2,6 +2,8 @@ project(datm Fortran)
 set(SRCFILES atm_comp_nuopc.F90
              datm_datamode_clmncep_mod.F90
              datm_datamode_cplhist_mod.F90
+             # MESACLIP: added by mesawave add_mesaclip_to_cesm.py
+             datm_datamode_mesaclip_mod.F90
              datm_datamode_core2_mod.F90
              datm_datamode_jra_mod.F90
              datm_datamode_gefs_mod.F90
