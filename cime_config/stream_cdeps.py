@@ -34,7 +34,7 @@ _stream_file_template = """
    <vectors>{stream_vectors}</vectors>
    <meshfile>{stream_meshfile}</meshfile>
    <lev_dimname>{stream_lev_dimname}</lev_dimname>
-   <datafiles>
+   <datafiles{stream_datafiles_attrs}>
       {stream_datafiles}
    </datafiles>
    <datavars>
@@ -221,7 +221,7 @@ class StreamCDEPS(GenericXML):
             )
 
             # now write the data model streams xml file
-            stream_vars = {}
+            stream_vars = {"stream_datafiles_attrs": ""}
             stream_vars["streamname"] = stream_name
             attributes = {}
             for node in self.get_children(root=self.stream_nodes):
@@ -308,6 +308,8 @@ class StreamCDEPS(GenericXML):
                                 data_year_first,
                                 data_year_last,
                             )
+                            # the model checks these files' times against their names
+                            stream_vars["stream_datafiles_attrs"] = ' check_dates="true"'
                         # endif
                         if stream_vars[node_name]:
                             stream_vars[
@@ -755,7 +757,9 @@ class StreamCDEPS(GenericXML):
         <start>-<end> part: the directory is listed, the files matching the rest
         of the name are sorted by start date, and those overlapping the years are
         kept. A file ending on Jan 1 stops at the start of that year. Stops with
-        an error if two kept files overlap or a year has no file.
+        an error if two kept files overlap, a year has no file, or (for dates of
+        8+ digits, yyyymmdd[hh]) a file starts more than a day after the
+        previous one ends.
 
         Returns a string (filenames separated by newlines).
         """
@@ -781,6 +785,12 @@ class StreamCDEPS(GenericXML):
             if int(start[:4]) <= year_last and last >= year_first:
                 files.append((start, end, int(start[:4]), last, entry))
         files.sort()
+
+        def name_time(stamp):
+            return datetime.datetime(
+                int(stamp[:4]), int(stamp[4:6]), int(stamp[6:8]), int(stamp[8:10] or 0)
+            )
+
         for previous, current in zip(files, files[1:]):
             expect(
                 current[0] >= previous[1],
@@ -788,6 +798,13 @@ class StreamCDEPS(GenericXML):
                     stream_name, previous[4], current[4]
                 ),
             )
+            if min(len(previous[1]), len(current[0])) >= 8:
+                expect(
+                    name_time(current[0]) - name_time(previous[1]) <= datetime.timedelta(days=1),
+                    "Gap between files for stream {}: {} and {}".format(
+                        stream_name, previous[4], current[4]
+                    ),
+                )
         covered = set()
         for _, _, first, last, _ in files:
             covered.update(range(first, last + 1))

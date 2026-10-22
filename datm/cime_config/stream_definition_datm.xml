@@ -17,7 +17,8 @@
   %ymd  => year-month-day from the range yearfirst to yearlast with all 12 months
   %daterange => the <start>-<end> part of CESM time-series file names (one variable per
                 file, e.g. VAR.2000010100-2001010100.nc); expands to the existing files
-                covering the stream's year_first to year_last, checked for gaps and overlaps
+                covering the stream's year_first to year_last, checked for gaps and overlaps;
+                the model also checks each file's first and last times against its name
 
   ******
   NOTE:

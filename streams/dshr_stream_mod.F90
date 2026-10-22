@@ -110,6 +110,7 @@ module dshr_stream_mod
      integer           :: pio_ioformat
      logical           :: init         = .false.                ! has stream been initialized
      integer           :: nFiles       = 0                      ! number of data files
+     logical           :: checkDates   = .false.                ! check file times against <start>-<end> names
      integer           :: yearFirst    = -1                     ! first year to use in t-axis (yyyymmdd)
      integer           :: yearLast     = -1                     ! last  year to use in t-axis (yyyymmdd)
      integer           :: yearAlign    = -1                     ! align yearFirst with this model year
@@ -156,7 +157,7 @@ contains
                                       pio_subsystem, io_type, io_format, compname, rc)
 
     use FoX_DOM, only : extractDataContent, destroy, Node, NodeList, parseFile, getElementsByTagname
-    use FoX_DOM, only : getLength, item
+    use FoX_DOM, only : getLength, item, getAttribute
     use ESMF   , only : ESMF_VM, ESMF_VMGetCurrent, ESMF_VMBroadCast, ESMF_SUCCESS
 
     ! ---------------------------------------------------------------------
@@ -204,7 +205,7 @@ contains
     character(len=CL)        :: tmpstr
     integer                  :: i, n, nstrms
     integer                  :: status
-    integer                  :: tmp(6)
+    integer                  :: tmp(7)
     real(r8)                 :: rtmp(1)
     character(len=*),parameter   :: subName = '(shr_stream_init_from_xml) '
     ! --------------------------------------------------------
@@ -334,6 +335,8 @@ contains
           if (.not. associated(p)) then
              call shr_sys_abort(subname//" stream data files must be provided")
           endif
+          ! %daterange streams (stream_cdeps.py) ask for file times to be checked against names
+          streamdat(i)%checkDates = (trim(getAttribute(p, "check_dates")) == "true")
           filelist => getElementsByTagname(p,"file")
           streamdat(i)%nfiles = getLength(filelist)
           allocate(streamdat(i)%file(streamdat(i)%nfiles))
@@ -388,8 +391,9 @@ contains
        tmp(4) = streamdat(i)%yearLast
        tmp(5) = streamdat(i)%yearAlign
        tmp(6) = streamdat(i)%offset
+       tmp(7) = merge(1, 0, streamdat(i)%checkDates)
 
-       call ESMF_VMBroadCast(vm, tmp, 6, 0, rc=rc)
+       call ESMF_VMBroadCast(vm, tmp, 7, 0, rc=rc)
        if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
        streamdat(i)%nfiles    = tmp(1)
@@ -398,6 +402,7 @@ contains
        streamdat(i)%yearLast  = tmp(4)
        streamdat(i)%yearAlign = tmp(5)
        streamdat(i)%offset    = tmp(6)
+       streamdat(i)%checkDates = (tmp(7) == 1)
 
        if (.not. streamdat(i)%mainproc) then
           allocate(streamdat(i)%file(streamdat(i)%nfiles))
@@ -1417,8 +1422,8 @@ contains
     enddo
     deallocate(tvar)
 
-    ! check the times against the dates in the file name, if it has them
-    call checkNameDates(strm, k, calendar)
+    ! check the times against the dates in the file name (%daterange streams)
+    if (strm%checkDates) call checkNameDates(strm, k, calendar)
 
     ! close file
     if (debug_level>1 .and. strm%mainproc) then
