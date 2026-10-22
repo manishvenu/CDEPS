@@ -33,6 +33,11 @@
       <value docn_mode="multilev_dom">sst_salinity_depth_blom,prescribed</value>
       <value docn_mode="multilev">sst_salinity_depth_blom</value>
       <value docn_mode="cplhist">cplhist</value>
+      <value docn_mode="mesaclip_hist">MESACLIP_HIST.SST,MESACLIP_HIST.U1_1,MESACLIP_HIST.V1_1,MESACLIP_HIST.SSS</value>
+      <value docn_mode="mesaclip_rcp26">MESACLIP_RCP26.SST,MESACLIP_RCP26.U1_1,MESACLIP_RCP26.V1_1,MESACLIP_RCP26.SSS</value>
+      <value docn_mode="mesaclip_rcp45">MESACLIP_RCP45.SST,MESACLIP_RCP45.U1_1,MESACLIP_RCP45.V1_1,MESACLIP_RCP45.SSS</value>
+      <value docn_mode="mesaclip_rcp60">MESACLIP_RCP60.SST,MESACLIP_RCP60.U1_1,MESACLIP_RCP60.V1_1,MESACLIP_RCP60.SSS</value>
+      <value docn_mode="mesaclip_rcp85">MESACLIP_RCP85.SST,MESACLIP_RCP85.U1_1,MESACLIP_RCP85.V1_1,MESACLIP_RCP85.SSS</value>
     </values>
   </entry>
 
@@ -40,7 +45,7 @@
     <type>char</type>
     <category>docn</category>
     <group>docn_nml</group>
-    <valid_values>sstdata,sst_aquap1,sst_aquap2,sst_aquap3,sst_aquap4,sst_aquap5,sst_aquap6,sst_aquap7,sst_aquap8,sst_aquap9,sst_aquap10,sst_aquapfile,sst_aquap_constant,som,som_aquap,iaf,cplhist,multilev,multilev_sstdata,multilev_cplhist</valid_values>
+    <valid_values>sstdata,sst_aquap1,sst_aquap2,sst_aquap3,sst_aquap4,sst_aquap5,sst_aquap6,sst_aquap7,sst_aquap8,sst_aquap9,sst_aquap10,sst_aquapfile,sst_aquap_constant,som,som_aquap,iaf,cplhist,multilev,multilev_sstdata,multilev_cplhist,mesaclip</valid_values>
     <desc>
       General method that operates on the data for a given docn_mode.
       ==> dataMode = "sstdata"
@@ -105,6 +110,7 @@
       <value docn_mode="multilev_dom">multilev_sstdata</value>
       <value docn_mode="multilev">multilev</value>
       <value docn_mode="cplhist">cplhist</value>
+      <value docn_mode="mesaclip">mesaclip</value>
     </values>
   </entry>
 
