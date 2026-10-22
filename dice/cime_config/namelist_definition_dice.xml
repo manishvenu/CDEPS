@@ -23,6 +23,11 @@
     <values>
       <value dice_mode="ssmi_iaf">ssmi_iaf</value>
       <value dice_mode="ssmi">ssmi_nyf</value>
+      <value dice_mode="mesaclip_hist">MESACLIP_HIST.aice_d,MESACLIP_HIST.hi_d</value>
+      <value dice_mode="mesaclip_rcp26">MESACLIP_RCP26.aice_d,MESACLIP_RCP26.hi_d</value>
+      <value dice_mode="mesaclip_rcp45">MESACLIP_RCP45.aice_d,MESACLIP_RCP45.hi_d</value>
+      <value dice_mode="mesaclip_rcp60">MESACLIP_RCP60.aice_d,MESACLIP_RCP60.hi_d</value>
+      <value dice_mode="mesaclip_rcp85">MESACLIP_RCP85.aice_d,MESACLIP_RCP85.hi_d</value>
     </values>
   </entry>
 
@@ -30,7 +35,7 @@
     <type>char</type>
     <category>streams</category>
     <group>dice_nml</group>
-    <valid_values>ssmi,ssmi_iaf</valid_values>
+    <valid_values>ssmi,ssmi_iaf,mesaclip</valid_values>
     <desc>
       general method that operates on the data.
       Is a prognostic mode. It requires data be sent to the ice  model.
@@ -41,6 +46,7 @@
     <values>
       <value dice_mode="ssmi_iaf">ssmi_iaf</value>
       <value dice_mode="ssmi">ssmi</value>
+      <value dice_mode="mesaclip">mesaclip</value>
     </values>
   </entry>
 
