@@ -55,6 +55,7 @@ module datm_datamode_mesaclip_mod
   real(r8), pointer :: strm_Sa_pslv(:)    => null()
   real(r8), pointer :: strm_Sa_u(:)       => null()
   real(r8), pointer :: strm_Sa_v(:)       => null()
+  real(r8), pointer :: strm_Sa_wspd10m(:) => null() ! MESACLIP: CAM's U10, for WW3
   ! MESACLIP: no stream Sa_ptem, Sa_dens or direct shortwave; they're computed
   ! below. Total downward shortwave (FSDS) is read instead.
   real(r8), pointer :: strm_Faxa_swdn(:)  => null()
@@ -219,6 +220,10 @@ contains
     call shr_strdata_get_stream_pointer(sdat, 'Sa_v', strm_Sa_v, requirePointer=.true., &
          errmsg=subname//'ERROR: strm_Sa_v must be associated for mesaclip datamode', rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    ! MESACLIP: CAM's 10 m wind speed, needed only when WW3 asks for 10 m winds
+    call shr_strdata_get_stream_pointer(sdat, 'Sa_wspd10m', strm_Sa_wspd10m, requirePointer=associated(Sa_u10m), &
+         errmsg=subname//'ERROR: strm_Sa_wspd10m must be associated for mesaclip datamode with 10 m winds', rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
     ! MESACLIP: CAM precipitation rates instead of the coupler's rain/snow fields
     call shr_strdata_get_stream_pointer(sdat, 'Faxa_prect', strm_Faxa_prect, requirePointer=.true., &
          errmsg=subname//'ERROR: strm_Faxa_prect must be associated for mesaclip datamode', rc=rc)
@@ -255,6 +260,8 @@ contains
     integer, intent(out)   :: rc
 
     ! local variables
+    integer  :: n    ! MESACLIP
+    real(r8) :: wspd ! MESACLIP: lowest-level wind speed
     character(len=*), parameter :: subname='(datm_datamode_mesaclip_advance): '
     !-------------------------------------------------------------------------------
 
@@ -275,9 +282,23 @@ contains
     Sa_ptem(:) = Sa_tbot(:)
     Sa_dens(:) = Sa_pbot(:) / (rdair * Sa_tbot(:) * (1.0_r8 + zvir * Sa_shum(:)))
 
-    ! MESACLIP: WW3 gets the lowest-level winds as its 10 m winds for now
-    if (associated(Sa_u10m)) Sa_u10m(:) = Sa_u(:)
-    if (associated(Sa_v10m)) Sa_v10m(:) = Sa_v(:)
+    ! MESACLIP: WW3's 10 m wind is CAM's 10 m wind speed U10 in the direction of the
+    ! lowest-level wind (UBOT/VBOT, at ZBOT ~ 60 m), as NorESM's CAM exports it to WW3.
+    ! U10 is CESM's equivalent-neutral 10 m wind from the surface fluxes, merged over the
+    ! cell's ocean, ice and land. Where the lowest-level wind is 0 its direction is
+    ! undefined, so the 10 m wind is 0.
+    if (associated(Sa_u10m)) then
+       do n = 1, size(Sa_u)
+          wspd = sqrt(Sa_u(n)**2 + Sa_v(n)**2)
+          if (wspd > 0.0_r8) then
+             Sa_u10m(n) = strm_Sa_wspd10m(n) * Sa_u(n) / wspd
+             Sa_v10m(n) = strm_Sa_wspd10m(n) * Sa_v(n) / wspd
+          else
+             Sa_u10m(n) = 0.0_r8
+             Sa_v10m(n) = 0.0_r8
+          end if
+       end do
+    end if
 
     ! MESACLIP: split CAM precipitation into rain/snow and convert m/s -> kg/m2/s.
     ! PRECT = PRECC + PRECL, and PRECSC/PRECSL are the snow parts of PRECC/PRECL.
