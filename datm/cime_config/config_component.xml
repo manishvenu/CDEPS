@@ -10,7 +10,7 @@
        This file may have atm desc entries.
   -->
   <description modifier_mode="1">
-    <desc atm="DATM[%QIA][%WISOQIA][%CRUJRA2024][%CRUJRA2024b][%CRUv7][%GSWP3v1][%MOSARTTEST][%NLDAS2][%CPLHIST][%1PT][%NYF][%IAF][%JRA][%JRA-1p4-2018][%JRA-1p5-2023][%JRA-RYF6162][%JRA-RYF8485][%JRA-RYF9091][%JRA-RYF0304][%SIMPLE]"> Data driven ATM </desc>
+    <desc atm="DATM[%QIA][%WISOQIA][%CRUJRA2024][%CRUJRA2024b][%CRUv7][%GSWP3v1][%MOSARTTEST][%NLDAS2][%CPLHIST][%1PT][%NYF][%IAF][%JRA][%JRA-1p4-2018][%JRA-1p5-2023][%JRA-RYF6162][%JRA-RYF8485][%JRA-RYF9091][%JRA-RYF0304][%SIMPLE][%MESACLIP-HIST][%MESACLIP-RCP26][%MESACLIP-RCP45][%MESACLIP-RCP60][%MESACLIP-RCP85]"> Data driven ATM </desc>
     <desc option="QIA"> QIAN data set </desc>
     <desc option="WISOQIA">QIAN with water isotopes</desc>
     <desc option="CRUJRA2024"> CRUJRA 2024 data set </desc>
@@ -19,6 +19,11 @@
     <desc option="GSWP3v1"> GSWP3v1 data set </desc>
     <desc option="NLDAS2"> NLDAS2 regional 0.125 degree data set over the U.S. (25-53N, 235-293E). WARNING: Garbage data will be produced for runs extending beyond this regional domain. </desc>
     <desc option="CPLHIST"> Coupler hist data set (in this mode, it is strongly recommended that the model domain and the coupler history forcing are on the same domain)</desc>
+    <desc option="MESACLIP-HIST"> MESACLIP HIST from GDEX d651007 (mesaclip datamode)</desc>
+    <desc option="MESACLIP-RCP26"> MESACLIP RCP26 from GDEX d651043 (mesaclip datamode)</desc>
+    <desc option="MESACLIP-RCP45"> MESACLIP RCP45 from GDEX d651043 (mesaclip datamode)</desc>
+    <desc option="MESACLIP-RCP60"> MESACLIP RCP60 from GDEX d651008 (mesaclip datamode)</desc>
+    <desc option="MESACLIP-RCP85"> MESACLIP RCP85 from GDEX d651009 (mesaclip datamode)</desc>
     <desc option="1PT">single point tower site data set </desc>
     <desc option="NYF">COREv2 normal year forcing</desc>
     <desc option="IAF">COREv2 interannual forcing</desc>
@@ -44,7 +49,7 @@
 
   <entry id="DATM_MODE">
     <type>char</type>
-    <valid_values>CORE2_NYF,CORE2_IAF,CLM_QIAN,CLM_QIAN_WISO,1PT,CLMCRUJRA2024,CLMCRUJRA2024b,CLMCRUNCEPv7,CLMGSWP3v1,CLMNLDAS2,CPLHIST,CORE_IAF_JRA,CORE_IAF_JRA_1p4_2018,CORE_IAF_JRA_1p5_2023,CORE_RYF6162_JRA,CORE_RYF8485_JRA,CORE_RYF9091_JRA,CORE_RYF0304_JRA,ERA5,SIMPLE</valid_values>
+    <valid_values>CORE2_NYF,CORE2_IAF,CLM_QIAN,CLM_QIAN_WISO,1PT,CLMCRUJRA2024,CLMCRUJRA2024b,CLMCRUNCEPv7,CLMGSWP3v1,CLMNLDAS2,CPLHIST,CORE_IAF_JRA,CORE_IAF_JRA_1p4_2018,CORE_IAF_JRA_1p5_2023,CORE_RYF6162_JRA,CORE_RYF8485_JRA,CORE_RYF9091_JRA,CORE_RYF0304_JRA,ERA5,SIMPLE,MESACLIP_HIST,MESACLIP_RCP26,MESACLIP_RCP45,MESACLIP_RCP60,MESACLIP_RCP85</valid_values>
     <default_value>CORE2_NYF</default_value>
     <group>run_component_datm</group>
     <file>env_run.xml</file>
@@ -73,6 +78,11 @@
       <value compset="DATM%ERA5">ERA5</value>
       <value compset="DATM%CPLHIST">CPLHIST</value>
       <value compset="DATM%SIMPLE">SIMPLE</value>
+      <value compset="DATM%MESACLIP-HIST">MESACLIP_HIST</value>
+      <value compset="DATM%MESACLIP-RCP26">MESACLIP_RCP26</value>
+      <value compset="DATM%MESACLIP-RCP45">MESACLIP_RCP45</value>
+      <value compset="DATM%MESACLIP-RCP60">MESACLIP_RCP60</value>
+      <value compset="DATM%MESACLIP-RCP85">MESACLIP_RCP85</value>
     </values>
   </entry>
 
@@ -155,6 +165,11 @@
       <value compset="_SLND">none</value>
       <value compset="_DLND">none</value>
       <value compset="_DATM%CPLHIST">cplhist</value>
+      <value compset="DATM%MESACLIP-HIST">observed</value>
+      <value compset="DATM%MESACLIP-RCP26">observed</value>
+      <value compset="DATM%MESACLIP-RCP45">observed</value>
+      <value compset="DATM%MESACLIP-RCP60">observed</value>
+      <value compset="DATM%MESACLIP-RCP85">observed</value>
     </values>
     <group>run_component_datm</group>
     <file>env_run.xml</file>
@@ -219,6 +234,22 @@
     <desc>case name used to determine stream filenames when DATM_MODE is CPLHIST</desc>
   </entry>
 
+  <entry id="DATM_MESACLIP_CASE">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>UNSET</default_value>
+    <values match="last">
+      <value compset="DATM%MESACLIP-HIST">b.e13.BHISTC5.ne120_t12.cesm-ihesp-hires1.0.46-1920-2005.010</value>
+      <value compset="DATM%MESACLIP-RCP26">b.e13.BRCP26C5.ne120_t12.cesm-ihesp-hires1.0.42.003</value>
+      <value compset="DATM%MESACLIP-RCP45">b.e13.BRCP45C5.ne120_t12.cesm-ihesp-hires1.0.42.003</value>
+      <value compset="DATM%MESACLIP-RCP60">b.e13.BRCP60C5.ne120_t12.cesm-ihesp-hires1.0.46-2006-2100.010</value>
+      <value compset="DATM%MESACLIP-RCP85">b.e13.BRCP85C5.ne120_t12.cesm-ihesp-hires1.0.46-2006-2100.010</value>
+    </values>
+    <group>run_component_datm</group>
+    <file>env_run.xml</file>
+    <desc>MESACLIP case name on GDEX (picks the ensemble member) when DATM_MODE is MESACLIP_*</desc>
+  </entry>
+
   <entry id="DATM_YR_ALIGN">
     <type>integer</type>
     <valid_values></valid_values>
@@ -246,6 +277,11 @@
       <value compset="2003.*_DATM">$DATM_YR_START</value>
       <value compset="2010.*_DATM">$DATM_YR_START</value>
       <value compset="4804.*_DATM">$DATM_YR_START</value>
+      <value compset="DATM%MESACLIP-HIST">$DATM_YR_START</value>
+      <value compset="DATM%MESACLIP-RCP26">$DATM_YR_START</value>
+      <value compset="DATM%MESACLIP-RCP45">$DATM_YR_START</value>
+      <value compset="DATM%MESACLIP-RCP60">$DATM_YR_START</value>
+      <value compset="DATM%MESACLIP-RCP85">$DATM_YR_START</value>
     </values>
     <group>run_component_datm</group>
     <file>env_run.xml</file>
@@ -311,6 +347,11 @@
       <value compset="2000.*_DATM%NLDAS2">1980</value>
       <value compset="2010.*_DATM%NLDAS2">2005</value>
       <value compset="2003.*_DATM%NLDAS2">2002</value>
+      <value compset="DATM%MESACLIP-HIST">1920</value>
+      <value compset="DATM%MESACLIP-RCP26">2006</value>
+      <value compset="DATM%MESACLIP-RCP45">2006</value>
+      <value compset="DATM%MESACLIP-RCP60">2006</value>
+      <value compset="DATM%MESACLIP-RCP85">2006</value>
     </values>
     <group>run_component_datm</group>
     <file>env_run.xml</file>
@@ -373,6 +414,11 @@
       <value   compset="2000.*_DATM%NLDAS2">2018</value>
       <value   compset="2010.*_DATM%NLDAS2">2014</value>
       <value   compset="2003.*_DATM%NLDAS2">2003</value>
+      <value compset="DATM%MESACLIP-HIST">2005</value>
+      <value compset="DATM%MESACLIP-RCP26">2100</value>
+      <value compset="DATM%MESACLIP-RCP45">2100</value>
+      <value compset="DATM%MESACLIP-RCP60">2100</value>
+      <value compset="DATM%MESACLIP-RCP85">2100</value>
     </values>
     <group>run_component_datm</group>
     <file>env_run.xml</file>
