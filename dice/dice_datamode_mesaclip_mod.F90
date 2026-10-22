@@ -417,16 +417,6 @@ contains
     ! MESACLIP: aice_d is in %; convert to fraction
     Si_ifrac(:) = strm_Si_ifrac(:) / 100.0_r8
 
-    ! MESACLIP: ice thickness as CICE sends it to WW3 (vice/aice where aice > puny,
-    ! else 0; ice_import_export.F90), from MESACLIP's hi_d and aice_d. Without a
-    ! hi_d stream it stays 0.
-    if (associated(Si_thick)) then
-       Si_thick(:) = 0.0_r8
-       if (associated(strm_Si_vice)) then
-          where (Si_ifrac(:) > 1.0e-11_r8) Si_thick(:) = strm_Si_vice(:) / Si_ifrac(:)
-       end if
-    end if
-
     lsize = size(Si_ifrac)
 
     if (first_time) then
@@ -569,6 +559,17 @@ contains
           Fioi_salt(n) = 0.0_r8
        end if
     end do
+
+    ! MESACLIP: ice thickness as CICE sends it to WW3 (vice/aice where aice > puny,
+    ! else 0; ice_import_export.F90), from MESACLIP's hi_d and the final ice fraction
+    ! above, so the volume matches the fraction sent. Ice made from accumulated
+    ! water has no hi_d and gets 0. Without a hi_d stream it stays 0.
+    if (associated(Si_thick)) then
+       Si_thick(:) = 0.0_r8
+       if (associated(strm_Si_vice)) then
+          where (Si_ifrac(:) > 1.0e-11_r8) Si_thick(:) = strm_Si_vice(:) / Si_ifrac(:)
+       end if
+    end if
 
     ! Compute outgoing aerosol fluxes
     do n = 1,lsize
