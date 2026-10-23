@@ -283,7 +283,7 @@ contains
     Sa_dens(:) = Sa_pbot(:) / (rdair * Sa_tbot(:) * (1.0_r8 + zvir * Sa_shum(:)))
 
     ! MESACLIP: WW3's 10 m wind is CAM's 10 m wind speed U10 in the direction of the
-    ! lowest-level wind (UBOT/VBOT, at ZBOT ~ 60 m), as NorESM's CAM exports it to WW3.
+    ! lowest-level wind (UBOT/VBOT, at ZBOT ~ 60 m).
     ! U10 is CESM's equivalent-neutral 10 m wind from the surface fluxes, merged over the
     ! cell's ocean, ice and land. Where the lowest-level wind is 0 its direction is
     ! undefined, so the 10 m wind is 0.
