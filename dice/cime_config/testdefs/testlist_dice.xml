@@ -34,16 +34,16 @@
       <option name="wallclock"> 00:30:00 </option>
     </options>
   </test>
-  <test compset="HIST_DATM%MESACLIP-HIST_SLND_DICE%MESACLIP-HIST_DOCN%MESACLIP-HIST_SROF_SGLC_WW3" grid="T62_t232_wt232" name="SMS_D_Ld3" testmods="dice/mesaclip">
+  <test compset="HIST_DATM%MESACLIP-HIST_SLND_DICE%MESACLIP-HIST_DOCN%MESACLIP-HIST_SROF_SGLC_WW3" grid="T62_t232_wg37" name="SMS_D_Ld3_P12" testmods="dice/mesaclip">
     <machines>
       <machine name="derecho" compiler="intel" category="aux_cdeps"/>
     </machines>
     <options>
-      <option name="wallclock"> 00:30:00 </option>
+      <option name="wallclock"> 01:00:00 </option>
       <option name="comment">MESACLIP DATM, DOCN and DICE modes forcing WW3, with DEBUG on</option>
     </options>
   </test>
-  <test compset="HIST_DATM%MESACLIP-RCP45_SLND_DICE%MESACLIP-RCP45_DOCN%MESACLIP-RCP45_SROF_SGLC_WW3" grid="T62_t232_wt232" name="ERS_Ld4" testmods="dice/mesaclip">
+  <test compset="HIST_DATM%MESACLIP-RCP45_SLND_DICE%MESACLIP-RCP45_DOCN%MESACLIP-RCP45_SROF_SGLC_WW3" grid="T62_t232_wg37" name="ERS_Ld4_P12" testmods="dice/mesaclip">
     <machines>
       <machine name="derecho" compiler="intel" category="aux_cdeps"/>
     </machines>

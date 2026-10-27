@@ -1,4 +1,2 @@
 # start on the first day of the MESACLIP scenario's data
 ./xmlchange RUN_STARTDATE="$(./xmlquery --value DATM_YR_START)-01-01"
-# couple hourly: WW3's 1200 s timestep on wt232 must divide the coupling interval
-./xmlchange ATM_NCPL=24
