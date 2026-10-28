@@ -314,16 +314,6 @@ class StreamCDEPS(GenericXML):
                             )
                             stream_datafiles = stream_datafiles.strip()
                         # endif
-                        if "%daterange" in stream_datafiles:
-                            stream_datafiles = self._sub_daterange(
-                                stream_name,
-                                stream_datafiles.strip(),
-                                data_year_first,
-                                data_year_last,
-                            )
-                            # the model checks these files' times against their names
-                            stream_vars["stream_datafiles_attrs"] = ' check_dates="true"'
-                        # endif
                         if stream_vars[node_name]:
                             stream_vars[
                                 node_name
@@ -385,6 +375,26 @@ class StreamCDEPS(GenericXML):
                         stream_datafiles = stream_datafiles.replace(
                             "<file>", ""
                         ).replace("</file>", "")
+
+            # Expand %daterange after the user_nl_*_streams changes, so a changed file
+            # or year_first/year_last applies to it too
+            if "%daterange" in stream_datafiles:
+                stream_datafiles = "\n".join(
+                    self._sub_daterange(
+                        stream_name,
+                        datafile.strip(),
+                        int(stream_vars["stream_year_first"]),
+                        int(stream_vars["stream_year_last"]),
+                    )
+                    if "%daterange" in datafile
+                    else datafile.strip()
+                    for datafile in stream_datafiles.strip().split("\n")
+                )
+                stream_vars["stream_datafiles"] = self._add_xml_delimiter(
+                    stream_datafiles.split("\n"), "file"
+                )
+                # the model checks these files' times against their names
+                stream_vars["stream_datafiles_attrs"] = ' check_dates="true"'
 
             # append to stream xml file
             stream_file_text = _stream_file_template.format(**stream_vars)
