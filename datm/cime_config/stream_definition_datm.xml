@@ -5568,36 +5568,6 @@
     </stream_dtlimit>
     <stream_readmode>single</stream_readmode>
   </stream_entry>
-  <stream_entry name="MESACLIP_HIST.U10">
-    <stream_meshfile>
-      <meshfile>$DIN_LOC_ROOT/share/meshes/ne120np4_ESMFmesh_cdf5_c20211018.nc</meshfile>
-    </stream_meshfile>
-    <stream_datafiles>
-      <file>/glade/campaign/collections/gdex/data/d651007/$DATM_MESACLIP_CASE/atm/proc/tseries/hour_6/$DATM_MESACLIP_CASE.cam.h2.U10.%daterange.nc</file>
-    </stream_datafiles>
-    <stream_datavars>
-      <var>U10 Sa_wspd10m</var>
-    </stream_datavars>
-    <stream_lev_dimname>null</stream_lev_dimname>
-    <stream_mapalgo>
-      <mapalgo>bilinear</mapalgo>
-    </stream_mapalgo>
-    <stream_vectors>null</stream_vectors>
-    <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
-    <stream_year_first>$DATM_YR_START</stream_year_first>
-    <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>0</stream_offset>
-    <stream_tintalgo>
-      <tintalgo>linear</tintalgo>
-    </stream_tintalgo>
-    <stream_taxmode>
-      <taxmode>extend</taxmode>
-    </stream_taxmode>
-    <stream_dtlimit>
-      <dtlimit>1.e30</dtlimit>
-    </stream_dtlimit>
-    <stream_readmode>single</stream_readmode>
-  </stream_entry>
   <stream_entry name="MESACLIP_HIST.PSL">
     <stream_meshfile>
       <meshfile>$DIN_LOC_ROOT/share/meshes/ne120np4_ESMFmesh_cdf5_c20211018.nc</meshfile>
@@ -6027,36 +5997,6 @@
     </stream_datafiles>
     <stream_datavars>
       <var>ZBOT Sa_z</var>
-    </stream_datavars>
-    <stream_lev_dimname>null</stream_lev_dimname>
-    <stream_mapalgo>
-      <mapalgo>bilinear</mapalgo>
-    </stream_mapalgo>
-    <stream_vectors>null</stream_vectors>
-    <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
-    <stream_year_first>$DATM_YR_START</stream_year_first>
-    <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>0</stream_offset>
-    <stream_tintalgo>
-      <tintalgo>linear</tintalgo>
-    </stream_tintalgo>
-    <stream_taxmode>
-      <taxmode>extend</taxmode>
-    </stream_taxmode>
-    <stream_dtlimit>
-      <dtlimit>1.e30</dtlimit>
-    </stream_dtlimit>
-    <stream_readmode>single</stream_readmode>
-  </stream_entry>
-  <stream_entry name="MESACLIP_RCP26.U10">
-    <stream_meshfile>
-      <meshfile>$DIN_LOC_ROOT/share/meshes/ne120np4_ESMFmesh_cdf5_c20211018.nc</meshfile>
-    </stream_meshfile>
-    <stream_datafiles>
-      <file>/glade/campaign/collections/gdex/data/d651043/$DATM_MESACLIP_CASE/atm/proc/tseries/hour_6/$DATM_MESACLIP_CASE.cam.h2.U10.%daterange.nc</file>
-    </stream_datafiles>
-    <stream_datavars>
-      <var>U10 Sa_wspd10m</var>
     </stream_datavars>
     <stream_lev_dimname>null</stream_lev_dimname>
     <stream_mapalgo>
@@ -6528,36 +6468,6 @@
     </stream_dtlimit>
     <stream_readmode>single</stream_readmode>
   </stream_entry>
-  <stream_entry name="MESACLIP_RCP45.U10">
-    <stream_meshfile>
-      <meshfile>$DIN_LOC_ROOT/share/meshes/ne120np4_ESMFmesh_cdf5_c20211018.nc</meshfile>
-    </stream_meshfile>
-    <stream_datafiles>
-      <file>/glade/campaign/collections/gdex/data/d651043/$DATM_MESACLIP_CASE/atm/proc/tseries/hour_6/$DATM_MESACLIP_CASE.cam.h2.U10.%daterange.nc</file>
-    </stream_datafiles>
-    <stream_datavars>
-      <var>U10 Sa_wspd10m</var>
-    </stream_datavars>
-    <stream_lev_dimname>null</stream_lev_dimname>
-    <stream_mapalgo>
-      <mapalgo>bilinear</mapalgo>
-    </stream_mapalgo>
-    <stream_vectors>null</stream_vectors>
-    <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
-    <stream_year_first>$DATM_YR_START</stream_year_first>
-    <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>0</stream_offset>
-    <stream_tintalgo>
-      <tintalgo>linear</tintalgo>
-    </stream_tintalgo>
-    <stream_taxmode>
-      <taxmode>extend</taxmode>
-    </stream_taxmode>
-    <stream_dtlimit>
-      <dtlimit>1.e30</dtlimit>
-    </stream_dtlimit>
-    <stream_readmode>single</stream_readmode>
-  </stream_entry>
   <stream_entry name="MESACLIP_RCP45.PSL">
     <stream_meshfile>
       <meshfile>$DIN_LOC_ROOT/share/meshes/ne120np4_ESMFmesh_cdf5_c20211018.nc</meshfile>
@@ -7008,36 +6918,6 @@
     </stream_dtlimit>
     <stream_readmode>single</stream_readmode>
   </stream_entry>
-  <stream_entry name="MESACLIP_RCP60.U10">
-    <stream_meshfile>
-      <meshfile>$DIN_LOC_ROOT/share/meshes/ne120np4_ESMFmesh_cdf5_c20211018.nc</meshfile>
-    </stream_meshfile>
-    <stream_datafiles>
-      <file>/glade/campaign/collections/gdex/data/d651008/$DATM_MESACLIP_CASE/atm/proc/tseries/hour_6/$DATM_MESACLIP_CASE.cam.h2.U10.%daterange.nc</file>
-    </stream_datafiles>
-    <stream_datavars>
-      <var>U10 Sa_wspd10m</var>
-    </stream_datavars>
-    <stream_lev_dimname>null</stream_lev_dimname>
-    <stream_mapalgo>
-      <mapalgo>bilinear</mapalgo>
-    </stream_mapalgo>
-    <stream_vectors>null</stream_vectors>
-    <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
-    <stream_year_first>$DATM_YR_START</stream_year_first>
-    <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>0</stream_offset>
-    <stream_tintalgo>
-      <tintalgo>linear</tintalgo>
-    </stream_tintalgo>
-    <stream_taxmode>
-      <taxmode>extend</taxmode>
-    </stream_taxmode>
-    <stream_dtlimit>
-      <dtlimit>1.e30</dtlimit>
-    </stream_dtlimit>
-    <stream_readmode>single</stream_readmode>
-  </stream_entry>
   <stream_entry name="MESACLIP_RCP60.PSL">
     <stream_meshfile>
       <meshfile>$DIN_LOC_ROOT/share/meshes/ne120np4_ESMFmesh_cdf5_c20211018.nc</meshfile>
@@ -7467,36 +7347,6 @@
     </stream_datafiles>
     <stream_datavars>
       <var>ZBOT Sa_z</var>
-    </stream_datavars>
-    <stream_lev_dimname>null</stream_lev_dimname>
-    <stream_mapalgo>
-      <mapalgo>bilinear</mapalgo>
-    </stream_mapalgo>
-    <stream_vectors>null</stream_vectors>
-    <stream_year_align>$DATM_YR_ALIGN</stream_year_align>
-    <stream_year_first>$DATM_YR_START</stream_year_first>
-    <stream_year_last>$DATM_YR_END</stream_year_last>
-    <stream_offset>0</stream_offset>
-    <stream_tintalgo>
-      <tintalgo>linear</tintalgo>
-    </stream_tintalgo>
-    <stream_taxmode>
-      <taxmode>extend</taxmode>
-    </stream_taxmode>
-    <stream_dtlimit>
-      <dtlimit>1.e30</dtlimit>
-    </stream_dtlimit>
-    <stream_readmode>single</stream_readmode>
-  </stream_entry>
-  <stream_entry name="MESACLIP_RCP85.U10">
-    <stream_meshfile>
-      <meshfile>$DIN_LOC_ROOT/share/meshes/ne120np4_ESMFmesh_cdf5_c20211018.nc</meshfile>
-    </stream_meshfile>
-    <stream_datafiles>
-      <file>/glade/campaign/collections/gdex/data/d651009/$DATM_MESACLIP_CASE/atm/proc/tseries/hour_6/$DATM_MESACLIP_CASE.cam.h2.U10.%daterange.nc</file>
-    </stream_datafiles>
-    <stream_datavars>
-      <var>U10 Sa_wspd10m</var>
     </stream_datavars>
     <stream_lev_dimname>null</stream_lev_dimname>
     <stream_mapalgo>
