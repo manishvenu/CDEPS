@@ -1607,19 +1607,29 @@ contains
       character(len=*),parameter :: subName = '(shr_stream_readTCoord:checkNameDates) '
       !-------------------------------------------------------------------------------
 
+      ! The file name without its directory, e.g. VAR.2000010100-2001010100.nc
       name = strm%file(k)%name
       name = name(index(name, '/', back=.true.)+1:)
+
+      ! Cut out <start>-<end>: the text between the last '.' before '.nc' and
+      ! '.nc', split at its '-'. Names not shaped like this aren't checked.
       j = len_trim(name)
       if (j < 4) return
       if (name(j-2:j) /= '.nc') return
-      i = index(name(1:j-3), '.', back=.true.)
-      m = index(name(i+1:j-3), '-')
+      i = index(name(1:j-3), '.', back=.true.)  ! the '.' before <start>
+      m = index(name(i+1:j-3), '-')              ! the '-' between the dates
       if (i == 0 .or. m == 0) return
-      part(1) = name(i+1:i+m-1)
-      part(2) = name(i+m+1:j-3)
+      part(1) = name(i+1:i+m-1)                  ! <start>, e.g. 2000010100
+      part(2) = name(i+m+1:j-3)                  ! <end>,   e.g. 2001010100
+
+      ! Only check dates that are all digits and have a day (yyyymmdd[hh]); with
+      ! only a year or month, the name doesn't say when in it the file starts.
       do n = 1,2
          if (len_trim(part(n)) < 8 .or. verify(trim(part(n)), '0123456789') /= 0) return
       end do
+
+      ! Each date as the model keeps times: ndate = yyyymmdd and nsec = seconds
+      ! into that day, from the hour hh if the name has one (else 0)
       do n = 1,2
          read(part(n)(1:8),*) ndate(n)
          nsec(n) = 0
@@ -1629,10 +1639,18 @@ contains
          end if
       end do
 
+      ! The file's first time must be within a day of <start>, and its last time
+      ! within a day of <end>
       do n = 1,2
          m = merge(1, strm%file(k)%nt, n == 1) ! first time for the start, last for the end
+         ! The window [lodate losec, hidate hisec] is the name's date one day
+         ! (86400 s) either side, counted in the file's calendar so month, year and
+         ! leap-day boundaries come out right, e.g. 2001010100 gives 2000123100 to
+         ! 2001010200.
          call shr_cal_advDateInt(-86400, 'seconds', ndate(n), nsec(n), lodate, losec, calendar)
          call shr_cal_advDateInt( 86400, 'seconds', ndate(n), nsec(n), hidate, hisec, calendar)
+         ! Outside the window: before it (an earlier date, or the same date and
+         ! fewer seconds) or after it (a later date, or the same date and more seconds)
          if (strm%file(k)%date(m) < lodate .or. &
              (strm%file(k)%date(m) == lodate .and. strm%file(k)%secs(m) < losec) .or. &
              strm%file(k)%date(m) > hidate .or. &
