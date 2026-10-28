@@ -18,8 +18,21 @@ _var_ref_re = re.compile(r"\$(\{)?(?P<name>\w+)(?(1)\})")
 
 _ymd_re = re.compile(r"%(?P<digits>[1-9][0-9]*)?y(?P<month>m(?P<day>d)?)?")
 
-# The <start>-<end> part of a CESM time-series file name, e.g. 2000010100-2001010100
+# The <start>-<end> part of a CESM time-series file name, e.g. 2000010100-2001010100:
+# two dates of 4 or more digits (yyyy[mm[dd[hh]]]) joined by a dash
 _daterange_re = re.compile(r"(?P<start>[0-9]{4,})-(?P<end>[0-9]{4,})")
+
+
+def _daterange_time(stamp):
+    """The time of a date in a time-series file name.
+
+    The format is hardcoded to CESM's yyyymmdd followed by an optional hh
+    (e.g. 20860102 or 2000010100); it must have at least 8 digits.
+    """
+    return datetime.datetime(
+        int(stamp[:4]), int(stamp[4:6]), int(stamp[6:8]), int(stamp[8:10] or 0)
+    )
+
 
 _stream_file_template = """
   <stream_info name="{streamname}">
@@ -763,6 +776,9 @@ class StreamCDEPS(GenericXML):
 
         Returns a string (filenames separated by newlines).
         """
+        # The placeholder must be in the file name, once: one directory is listed,
+        # and the name is split around it into the parts every file shares, e.g.
+        # "case.cam.h2.UBOT." and ".nc".
         directory, name = os.path.split(filename)
         expect(
             name.count("%daterange") == 1 and "%daterange" not in directory,
@@ -773,6 +789,10 @@ class StreamCDEPS(GenericXML):
             os.path.isdir(directory),
             "No directory {} for stream {}".format(directory, stream_name),
         )
+
+        # Keep the files named prefix<start>-<end>suffix whose years overlap the
+        # stream's, as (start, end, first year, last year, file name). Other files
+        # in the directory (other variables, other names) are skipped.
         files = []
         for entry in os.listdir(directory):
             if not (entry.startswith(prefix) and entry.endswith(suffix)):
@@ -781,16 +801,18 @@ class StreamCDEPS(GenericXML):
             if match is None:
                 continue
             start, end = match.group("start"), match.group("end")
+            # A file ending at 00h on Jan 1 (e.g. ...-2001010100 or ...-20960101)
+            # holds only that one record of the end year, so its last year is the
+            # one before. end[4:8] is the month and day, end[8:] the hour, if any.
             last = int(end[:4]) - (1 if end[4:8] == "0101" and not end[8:].strip("0") else 0)
             if int(start[:4]) <= year_last and last >= year_first:
                 files.append((start, end, int(start[:4]), last, entry))
+        # Date order: dates with the same number of digits sort as strings.
         files.sort()
 
-        def name_time(stamp):
-            return datetime.datetime(
-                int(stamp[:4]), int(stamp[4:6]), int(stamp[6:8]), int(stamp[8:10] or 0)
-            )
-
+        # Neighboring files must not overlap: each starts at or after the previous
+        # one's end (the Jan 1 00h record may be in both). Where both dates have a
+        # day (8+ digits), the next file must also start within a day of that end.
         for previous, current in zip(files, files[1:]):
             expect(
                 current[0] >= previous[1],
@@ -800,11 +822,16 @@ class StreamCDEPS(GenericXML):
             )
             if min(len(previous[1]), len(current[0])) >= 8:
                 expect(
-                    name_time(current[0]) - name_time(previous[1]) <= datetime.timedelta(days=1),
+                    _daterange_time(current[0]) - _daterange_time(previous[1])
+                    <= datetime.timedelta(days=1),
                     "Gap between files for stream {}: {} and {}".format(
                         stream_name, previous[4], current[4]
                     ),
                 )
+
+        # Every stream year must be in some file's first-to-last years. This catches
+        # stream years before the first file or after the last one, and gaps
+        # between files named by year only (yyyy), which the check above skips.
         covered = set()
         for _, _, first, last, _ in files:
             covered.update(range(first, last + 1))
@@ -815,6 +842,8 @@ class StreamCDEPS(GenericXML):
                 os.path.join(directory, name), stream_name, missing
             ),
         )
+
+        # Full paths in date order, one per line, as <datafiles> takes them
         return "\n".join(os.path.join(directory, entry) for *_, entry in files)
 
     @staticmethod
