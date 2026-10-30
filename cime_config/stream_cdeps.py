@@ -379,13 +379,18 @@ class StreamCDEPS(GenericXML):
             # Expand %daterange after the user_nl_*_streams changes, so a changed file
             # or year_first/year_last applies to it too
             if "%daterange" in stream_datafiles:
+                year_first = int(stream_vars["stream_year_first"])
+                year_last = int(stream_vars["stream_year_last"])
+                self._check_daterange_start(
+                    stream_name,
+                    int(case.get_value("RUN_STARTDATE").split("-")[0]),
+                    stream_vars["stream_taxmode"],
+                    year_first,
+                    year_last,
+                    int(stream_vars["stream_year_align"]),
+                )
                 stream_datafiles = "\n".join(
-                    self._sub_daterange(
-                        stream_name,
-                        datafile.strip(),
-                        int(stream_vars["stream_year_first"]),
-                        int(stream_vars["stream_year_last"]),
-                    )
+                    self._sub_daterange(stream_name, datafile.strip(), year_first, year_last)
                     if "%daterange" in datafile
                     else datafile.strip()
                     for datafile in stream_datafiles.strip().split("\n")
@@ -393,8 +398,12 @@ class StreamCDEPS(GenericXML):
                 stream_vars["stream_datafiles"] = self._add_xml_delimiter(
                     stream_datafiles.split("\n"), "file"
                 )
-                # the model checks these files' times against their names
-                stream_vars["stream_datafiles_attrs"] = ' check_dates="true"'
+                # With <COMP>_CHECK_DATES TRUE (e.g. DATM_CHECK_DATES; off by default),
+                # the model checks these files' times against their names. The
+                # component is the first part of the file name, e.g. datm.streams.xml.
+                component = os.path.basename(streams_xml_file).split(".")[0]
+                if case.get_value(component.upper() + "_CHECK_DATES"):
+                    stream_vars["stream_datafiles_attrs"] = ' check_dates="true"'
 
             # append to stream xml file
             stream_file_text = _stream_file_template.format(**stream_vars)
@@ -855,6 +864,35 @@ class StreamCDEPS(GenericXML):
 
         # Full paths in date order, one per line, as <datafiles> takes them
         return "\n".join(os.path.join(directory, entry) for *_, entry in files)
+
+    @staticmethod
+    def _check_daterange_start(stream_name, start_year, taxmode, year_first, year_last, year_align):
+        """Check that the run starts inside a %daterange stream's years.
+
+        For model year y the model reads data year year_first + y - year_align
+        (with cycle, wrapped into year_first to year_last, so cycle always passes).
+        A run starting outside the years would hold the first or last record
+        (extend) or stop (limit), so that is an error. Starting after year_first
+        only costs time: at startup the model reads the time axis of every file
+        from year_first up to the start, so that is a warning.
+        """
+        if taxmode == "cycle":
+            return
+        data_year = year_first + start_year - year_align
+        expect(
+            year_first <= data_year <= year_last,
+            "Stream {} starts in data year {}, outside its years {} to {}; change "
+            "RUN_STARTDATE or the stream's year_first, year_last or year_align".format(
+                stream_name, data_year, year_first, year_last
+            ),
+        )
+        if data_year > year_first:
+            logger.warning(
+                "Stream %s starts in data year %d, after year_first %d: at startup the "
+                "model reads the time axis of each file from %d on. Setting year_first "
+                "to %d and year_align to %d skips them.",
+                stream_name, data_year, year_first, year_first, data_year, start_year,
+            )
 
     @staticmethod
     def _add_xml_delimiter(list_to_deliminate, delimiter):
