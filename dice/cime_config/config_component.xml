@@ -54,6 +54,17 @@
       same observational data sets and are consistent with each other.</desc>
   </entry>
 
+  <entry id="DICE_CHECK_DATES">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_component_dice</group>
+    <file>env_run.xml</file>
+    <desc> If TRUE, the model checks that each file of a %daterange stream holds times
+      within a day of the start and end dates in its name, when it first reads the file.
+    </desc>
+  </entry>
+
   <help>
     =========================================
     DICE naming conventions

@@ -116,6 +116,7 @@ module dshr_stream_mod
      integer           :: pio_ioformat
      logical           :: init         = .false.                ! has stream been initialized
      integer           :: nFiles       = 0                      ! number of data files
+     logical           :: checkDates   = .false.                ! check file times against <start>-<end> names
      integer           :: yearFirst    = -1                     ! first year to use in t-axis (yyyymmdd)
      integer           :: yearLast     = -1                     ! last  year to use in t-axis (yyyymmdd)
      integer           :: yearAlign    = -1                     ! align yearFirst with this model year
@@ -162,7 +163,7 @@ contains
                                       pio_subsystem, io_type, io_format, compname, rc)
 
     use FoX_DOM, only : extractDataContent, destroy, Node, NodeList, parseFile, getElementsByTagname
-    use FoX_DOM, only : getLength, item
+    use FoX_DOM, only : getLength, item, getAttribute
     use ESMF   , only : ESMF_VM, ESMF_VMGetCurrent, ESMF_VMBroadCast, ESMF_SUCCESS
 
     ! ---------------------------------------------------------------------
@@ -210,7 +211,7 @@ contains
     character(len=CL)        :: tmpstr
     integer                  :: i, n, nstrms
     integer                  :: status
-    integer                  :: tmp(6)
+    integer                  :: tmp(7)
     real(r8)                 :: rtmp(1)
     character(len=*),parameter   :: subName = '(shr_stream_init_from_xml) '
     ! --------------------------------------------------------
@@ -340,6 +341,8 @@ contains
           if (.not. associated(p)) then
              call shr_sys_abort(subname//" stream data files must be provided")
           endif
+          ! %daterange streams (stream_cdeps.py) ask for file times to be checked against names
+          streamdat(i)%checkDates = (trim(getAttribute(p, "check_dates")) == "true")
           filelist => getElementsByTagname(p,"file")
           streamdat(i)%nfiles = getLength(filelist)
           allocate(streamdat(i)%file(streamdat(i)%nfiles))
@@ -393,8 +396,9 @@ contains
        tmp(4) = streamdat(i)%yearLast
        tmp(5) = streamdat(i)%yearAlign
        tmp(6) = streamdat(i)%offset
+       tmp(7) = merge(1, 0, streamdat(i)%checkDates)
 
-       call ESMF_VMBroadCast(vm, tmp, 6, 0, rc=rc)
+       call ESMF_VMBroadCast(vm, tmp, 7, 0, rc=rc)
        if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
        streamdat(i)%nfiles    = tmp(1)
@@ -403,6 +407,7 @@ contains
        streamdat(i)%yearLast  = tmp(4)
        streamdat(i)%yearAlign = tmp(5)
        streamdat(i)%offset    = tmp(6)
+       streamdat(i)%checkDates = (tmp(7) == 1)
 
        if (.not. streamdat(i)%mainproc) then
           allocate(streamdat(i)%file(streamdat(i)%nfiles))
@@ -1426,6 +1431,9 @@ contains
     enddo
     deallocate(tvar)
 
+    ! check the times against the dates in the file name (%daterange streams)
+    if (strm%checkDates) call checkNameDates(strm, k, calendar)
+
     ! close file
     if (debug_level>1 .and. strm%mainproc) then
        write(strm%logunit,'(3a)') subname,' closing stream filename = ',trim(filename)
@@ -1586,6 +1594,86 @@ contains
          write(strm%logunit,'(2a,i0)') subname," data is OK (non-decreasing)  for file k =",k
       end if
     end subroutine verifyTCoord
+
+    subroutine checkNameDates(strm, k, calendar)
+      ! If the file name ends in .<start>-<end>.nc with dates of 8 or more digits
+      ! (yyyymmdd[hh]), as CESM time-series names do (VAR.2000010100-2001010100.nc,
+      ! VAR.20860102-20960101.nc), abort unless the file's first and last times are
+      ! within a day of those dates. Datasets name the end differently (the last
+      ! record, or the instant after it), hence the day's tolerance.
+
+      ! input/output parameters:
+      type(shr_stream_streamType) ,intent(in) :: strm     ! data stream
+      integer                     ,intent(in) :: k        ! stream file index
+      character(len=*)            ,intent(in) :: calendar ! calendar of the file's times
+
+      ! local variables
+      character(len=CX) :: name
+      character(len=CS) :: part(2)
+      integer           :: i, j, m, n
+      integer           :: ndate(2), nsec(2) ! dates and seconds from the name
+      integer           :: lodate, losec, hidate, hisec
+      character(len=*),parameter :: subName = '(shr_stream_readTCoord:checkNameDates) '
+      !-------------------------------------------------------------------------------
+
+      ! The file name without its directory, e.g. VAR.2000010100-2001010100.nc
+      name = strm%file(k)%name
+      name = name(index(name, '/', back=.true.)+1:)
+
+      ! Cut out <start>-<end>: the text between the last '.' before '.nc' and
+      ! '.nc', split at its '-'. Names not shaped like this aren't checked.
+      j = len_trim(name)
+      if (j < 4) return
+      if (name(j-2:j) /= '.nc') return
+      i = index(name(1:j-3), '.', back=.true.)  ! the '.' before <start>
+      m = index(name(i+1:j-3), '-')              ! the '-' between the dates
+      if (i == 0 .or. m == 0) return
+      part(1) = name(i+1:i+m-1)                  ! <start>, e.g. 2000010100
+      part(2) = name(i+m+1:j-3)                  ! <end>,   e.g. 2001010100
+
+      ! Only check dates that are all digits and have a day (yyyymmdd[hh]); with
+      ! only a year or month, the name doesn't say when in it the file starts.
+      do n = 1,2
+         if (len_trim(part(n)) < 8 .or. verify(trim(part(n)), '0123456789') /= 0) return
+      end do
+
+      ! Each date as the model keeps times: ndate = yyyymmdd and nsec = seconds
+      ! into that day, from the hour hh if the name has one (else 0)
+      do n = 1,2
+         read(part(n)(1:8),*) ndate(n)
+         nsec(n) = 0
+         if (len_trim(part(n)) >= 10) then
+            read(part(n)(9:10),*) nsec(n)
+            nsec(n) = nsec(n)*3600
+         end if
+      end do
+
+      ! The file's first time must be within a day of <start>, and its last time
+      ! within a day of <end>
+      do n = 1,2
+         m = merge(1, strm%file(k)%nt, n == 1) ! first time for the start, last for the end
+         ! The window [lodate losec, hidate hisec] is the name's date one day
+         ! (86400 s) either side, counted in the file's calendar so month, year and
+         ! leap-day boundaries come out right, e.g. 2001010100 gives 2000123100 to
+         ! 2001010200.
+         call shr_cal_advDateInt(-86400, 'seconds', ndate(n), nsec(n), lodate, losec, calendar)
+         call shr_cal_advDateInt( 86400, 'seconds', ndate(n), nsec(n), hidate, hisec, calendar)
+         ! Outside the window: before it (an earlier date, or the same date and
+         ! fewer seconds) or after it (a later date, or the same date and more seconds)
+         if (strm%file(k)%date(m) < lodate .or. &
+             (strm%file(k)%date(m) == lodate .and. strm%file(k)%secs(m) < losec) .or. &
+             strm%file(k)%date(m) > hidate .or. &
+             (strm%file(k)%date(m) == hidate .and. strm%file(k)%secs(m) > hisec)) then
+            if (strm%mainproc) then
+               write(strm%logunit,'(4a,i0,a,i0,a,i0,a,i0)') subname, &
+                    ' ERROR: times in ',trim(strm%file(k)%name),' do not match its name: ', &
+                    ndate(n),' ',nsec(n),' in the name, ',strm%file(k)%date(m),' ',strm%file(k)%secs(m)
+            end if
+            call shr_sys_abort(subName//"ERROR: file times do not match the dates in its name")
+         end if
+      end do
+
+    end subroutine checkNameDates
 
   end subroutine shr_stream_readTCoord
 

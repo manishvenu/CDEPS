@@ -18,6 +18,22 @@ _var_ref_re = re.compile(r"\$(\{)?(?P<name>\w+)(?(1)\})")
 
 _ymd_re = re.compile(r"%(?P<digits>[1-9][0-9]*)?y(?P<month>m(?P<day>d)?)?")
 
+# The <start>-<end> part of a CESM time-series file name, e.g. 2000010100-2001010100:
+# two dates of 4 or more digits (yyyy[mm[dd[hh]]]) joined by a dash
+_daterange_re = re.compile(r"(?P<start>[0-9]{4,})-(?P<end>[0-9]{4,})")
+
+
+def _daterange_time(stamp):
+    """The time of a date in a time-series file name.
+
+    The format is hardcoded to CESM's yyyymmdd followed by an optional hh
+    (e.g. 20860102 or 2000010100); it must have at least 8 digits.
+    """
+    return datetime.datetime(
+        int(stamp[:4]), int(stamp[4:6]), int(stamp[6:8]), int(stamp[8:10] or 0)
+    )
+
+
 _stream_file_template = """
   <stream_info name="{streamname}">
    <taxmode>{stream_taxmode}</taxmode>
@@ -31,7 +47,7 @@ _stream_file_template = """
    <vectors>{stream_vectors}</vectors>
    <meshfile>{stream_meshfile}</meshfile>
    <lev_dimname>{stream_lev_dimname}</lev_dimname>
-   <datafiles>
+   <datafiles{stream_datafiles_attrs}>
       {stream_datafiles}
    </datafiles>
    <datavars>
@@ -218,7 +234,7 @@ class StreamCDEPS(GenericXML):
             )
 
             # now write the data model streams xml file
-            stream_vars = {}
+            stream_vars = {"stream_datafiles_attrs": ""}
             stream_vars["streamname"] = stream_name
             attributes = {}
             for node in self.get_children(root=self.stream_nodes):
@@ -359,6 +375,35 @@ class StreamCDEPS(GenericXML):
                         stream_datafiles = stream_datafiles.replace(
                             "<file>", ""
                         ).replace("</file>", "")
+
+            # Expand %daterange after the user_nl_*_streams changes, so a changed file
+            # or year_first/year_last applies to it too
+            if "%daterange" in stream_datafiles:
+                year_first = int(stream_vars["stream_year_first"])
+                year_last = int(stream_vars["stream_year_last"])
+                self._check_daterange_start(
+                    stream_name,
+                    int(case.get_value("RUN_STARTDATE").split("-")[0]),
+                    stream_vars["stream_taxmode"],
+                    year_first,
+                    year_last,
+                    int(stream_vars["stream_year_align"]),
+                )
+                stream_datafiles = "\n".join(
+                    self._sub_daterange(stream_name, datafile.strip(), year_first, year_last)
+                    if "%daterange" in datafile
+                    else datafile.strip()
+                    for datafile in stream_datafiles.strip().split("\n")
+                )
+                stream_vars["stream_datafiles"] = self._add_xml_delimiter(
+                    stream_datafiles.split("\n"), "file"
+                )
+                # With <COMP>_CHECK_DATES TRUE (e.g. DATM_CHECK_DATES; off by default),
+                # the model checks these files' times against their names. The
+                # component is the first part of the file name, e.g. datm.streams.xml.
+                component = os.path.basename(streams_xml_file).split(".")[0]
+                if case.get_value(component.upper() + "_CHECK_DATES"):
+                    stream_vars["stream_datafiles_attrs"] = ' check_dates="true"'
 
             # append to stream xml file
             stream_file_text = _stream_file_template.format(**stream_vars)
@@ -732,6 +777,122 @@ class StreamCDEPS(GenericXML):
                     new_line = line.replace(match.group(0), date_string)
                     new_lines.append(new_line)
         return "\n".join(new_lines)
+
+    @staticmethod
+    def _sub_daterange(stream_name, filename, year_first, year_last):
+        """Expand %daterange in a file name to the existing files of a CESM
+        time-series set that cover year_first to year_last.
+
+        Time-series files hold one variable each, named by the dates they span,
+        e.g. VAR.2000010100-2001010100.nc or VAR.20860102-20960101.nc, so their
+        names can't be built from the year alone. %daterange stands for the
+        <start>-<end> part: the directory is listed, the files matching the rest
+        of the name are sorted by start date, and those overlapping the years are
+        kept. A file ending on Jan 1 stops at the start of that year. Stops with
+        an error if two kept files overlap, a year has no file, or (for dates of
+        8+ digits, yyyymmdd[hh]) a file starts more than a day after the
+        previous one ends.
+
+        Returns a string (filenames separated by newlines).
+        """
+        # The placeholder must be in the file name, once: one directory is listed,
+        # and the name is split around it into the parts every file shares, e.g.
+        # "case.cam.h2.UBOT." and ".nc".
+        directory, name = os.path.split(filename)
+        expect(
+            name.count("%daterange") == 1 and "%daterange" not in directory,
+            "%daterange must appear once, in the file name, for {}".format(stream_name),
+        )
+        prefix, suffix = name.split("%daterange")
+        expect(
+            os.path.isdir(directory),
+            "No directory {} for stream {}".format(directory, stream_name),
+        )
+
+        # Keep the files named prefix<start>-<end>suffix whose years overlap the
+        # stream's, as (start, end, first year, last year, file name). Other files
+        # in the directory (other variables, other names) are skipped.
+        files = []
+        for entry in os.listdir(directory):
+            if not (entry.startswith(prefix) and entry.endswith(suffix)):
+                continue
+            match = _daterange_re.fullmatch(entry[len(prefix) : len(entry) - len(suffix)])
+            if match is None:
+                continue
+            start, end = match.group("start"), match.group("end")
+            # A file ending at 00h on Jan 1 (e.g. ...-2001010100 or ...-20960101)
+            # holds only that one record of the end year, so its last year is the
+            # one before. end[4:8] is the month and day, end[8:] the hour, if any.
+            last = int(end[:4]) - (1 if end[4:8] == "0101" and not end[8:].strip("0") else 0)
+            if int(start[:4]) <= year_last and last >= year_first:
+                files.append((start, end, int(start[:4]), last, entry))
+        # Date order: dates with the same number of digits sort as strings.
+        files.sort()
+
+        # Neighboring files must not overlap: each starts at or after the previous
+        # one's end (the Jan 1 00h record may be in both). Where both dates have a
+        # day (8+ digits), the next file must also start within a day of that end.
+        for previous, current in zip(files, files[1:]):
+            expect(
+                current[0] >= previous[1],
+                "Overlapping files for stream {}: {} and {}".format(
+                    stream_name, previous[4], current[4]
+                ),
+            )
+            if min(len(previous[1]), len(current[0])) >= 8:
+                expect(
+                    _daterange_time(current[0]) - _daterange_time(previous[1])
+                    <= datetime.timedelta(days=1),
+                    "Gap between files for stream {}: {} and {}".format(
+                        stream_name, previous[4], current[4]
+                    ),
+                )
+
+        # Every stream year must be in some file's first-to-last years. This catches
+        # stream years before the first file or after the last one, and gaps
+        # between files named by year only (yyyy), which the check above skips.
+        covered = set()
+        for _, _, first, last, _ in files:
+            covered.update(range(first, last + 1))
+        missing = [year for year in range(year_first, year_last + 1) if year not in covered]
+        expect(
+            not missing,
+            "No file in {} for stream {} covers years {}".format(
+                os.path.join(directory, name), stream_name, missing
+            ),
+        )
+
+        # Full paths in date order, one per line, as <datafiles> takes them
+        return "\n".join(os.path.join(directory, entry) for *_, entry in files)
+
+    @staticmethod
+    def _check_daterange_start(stream_name, start_year, taxmode, year_first, year_last, year_align):
+        """Check that the run starts inside a %daterange stream's years.
+
+        For model year y the model reads data year year_first + y - year_align
+        (with cycle, wrapped into year_first to year_last, so cycle always passes).
+        A run starting outside the years would hold the first or last record
+        (extend) or stop (limit), so that is an error. Starting after year_first
+        only costs time: at startup the model reads the time axis of every file
+        from year_first up to the start, so that is a warning.
+        """
+        if taxmode == "cycle":
+            return
+        data_year = year_first + start_year - year_align
+        expect(
+            year_first <= data_year <= year_last,
+            "Stream {} starts in data year {}, outside its years {} to {}; change "
+            "RUN_STARTDATE or the stream's year_first, year_last or year_align".format(
+                stream_name, data_year, year_first, year_last
+            ),
+        )
+        if data_year > year_first:
+            logger.warning(
+                "Stream %s starts in data year %d, after year_first %d: at startup the "
+                "model reads the time axis of each file from %d on. Setting year_first "
+                "to %d and year_align to %d skips them.",
+                stream_name, data_year, year_first, year_first, data_year, start_year,
+            )
 
     @staticmethod
     def _add_xml_delimiter(list_to_deliminate, delimiter):
