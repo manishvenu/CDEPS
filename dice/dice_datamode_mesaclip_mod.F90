@@ -39,6 +39,7 @@ module dice_datamode_mesaclip_mod
   real(r8), pointer ::  Si_imask(:)      => null()
   real(r8), pointer ::  Si_ifrac(:)      => null()
   real(r8), pointer ::  Si_thick(:)      => null() ! MESACLIP: for WW3
+  real(r8), pointer ::  Si_floediam(:)   => null() ! MESACLIP: for WW3
   real(r8), pointer ::  Si_t(:)          => null()
   real(r8), pointer ::  Si_tref(:)       => null()
   real(r8), pointer ::  Si_qref(:)       => null()
@@ -138,6 +139,7 @@ contains
     call dshr_fldList_add(fldsExport , trim(flds_scalar_name))
     call dshr_fldList_add(fldsExport ,'Si_ifrac'    )
     call dshr_fldList_add(fldsExport ,'Si_thick'    ) ! MESACLIP: for WW3
+    call dshr_fldList_add(fldsExport ,'Si_floediam' ) ! MESACLIP: for WW3
     call dshr_fldList_add(fldsExport ,'Si_imask'    )
     call dshr_fldList_add(fldsExport ,'Si_t'        )
     call dshr_fldList_add(fldsExport ,'Si_tref'     )
@@ -257,6 +259,9 @@ contains
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     ! MESACLIP: only connected when a wave model imports it
     call dshr_state_getfldptr(exportState, fldname='Si_thick'    , fldptr1=Si_thick    , &
+         allowNullReturn=.true., rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+    call dshr_state_getfldptr(exportState, fldname='Si_floediam' , fldptr1=Si_floediam , &
          allowNullReturn=.true., rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     call dshr_state_getfldptr(exportState, fldname='Si_t'        , fldptr1=Si_t        , rc=rc)
@@ -569,6 +574,14 @@ contains
        if (associated(strm_Si_vice)) then
           where (Si_ifrac(:) > 1.0e-11_r8) Si_thick(:) = strm_Si_vice(:) / Si_ifrac(:)
        end if
+    end if
+
+    ! MESACLIP: floe diameter (m) for WW3's ice attenuation. MESACLIP has none, so this
+    ! sends 50 m where there is ice, what CICE sends WW3 with its floe size distribution off
+    ! (ice_import_export.F90). A placeholder for a fit to concentration and thickness.
+    if (associated(Si_floediam)) then
+       Si_floediam(:) = 0.0_r8
+       where (Si_ifrac(:) > 1.0e-11_r8) Si_floediam(:) = 50.0_r8
     end if
 
     ! Compute outgoing aerosol fluxes
